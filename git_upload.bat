@@ -1,71 +1,39 @@
-
-:: A linha abaixo oculta os comandos na tela, pra deixar a execução mais limpa.
-@echo off            
-
-
+:: Oculta os comandos na tela
+@echo off
 
 :: =========================================================================================
-
-:: A FUNCAO ABAIXO FAZ A VERIFICAÇÃO PRA SABER SE O GIT JÁ FOI INICIADO
-
+:: Verificação do repositório GIT
 
 echo === Verificando se o repositório do GIT já foi iniciado ===
 
 IF EXIST ".git" (
     echo GIT JA FOI INICIADO NESTA PASTA.
-)  ELSE (
-    echo INICIALIZANDO RESPOSITÓRIO GIT...
+) ELSE (
+    echo INICIALIZANDO REPOSITÓRIO GIT...
     git init
-
-    :: O CODIGO ABAIXO É PRA GARANTIR QUE O NOME SEMPRE SERA MAIN
     git branch -M main
 )
 
-
-:: ========================================================================================
-
-:: FUNCA ABAIXO É RESPONSAVEL POR REALIZAR O GIT
-
+:: =========================================================================================
+:: Adicionando arquivos e commit
 
 echo === Adicionando arquivos no GIT .... ===
-
-:: git.add  >>> adiciona todos os arquivos modificados
 git add .
+git commit -m "Atualização automática"
 
-:: git commit -m "..."    >>>> Salva as mudanças com uma mensagem
-git commit -m " Atualização automática "
-
-
-:: ========================================================================================
-
-:: ESTA FUNCAO É RESPONSAVEL POR CONECTAR O GIT E REALIZAR O UPLOAD
+:: =========================================================================================
+:: Conectar ao repositório remoto e enviar
 
 echo === Enviando para o repositório remoto no GitHub... ===
 
-REM Define a URL do repositório remoto
-git remote add origin https://github.com/Zocarat/esp8266_wifi_relay.git
+REM Adiciona origin (ignora erro se já existir)
+git remote add origin https://github.com/Zocarat/esp8266_wifi_relay.git 2>nul
 
-REM Faz push pro ramo principal (main)
+REM Faz pull antes do push, caso o repositório remoto tenha conteúdo
+git pull origin main --allow-unrelated-histories
+
+REM Envia os arquivos
 git push -u origin main
-
-
-
-
-:: OBS >>>>> O 2>nul evita erro se o remote origin já existir (ignora o aviso)
-
-
 
 echo === Processo concluído. Pressione qualquer tecla para sair... ===
 pause >nul
-
-
-
-
-
-
-
-
-
-
-
-
