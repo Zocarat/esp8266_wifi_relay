@@ -1,7 +1,7 @@
 @echo off
 
 :: ================================================
-:: CONFIGURACAO DO USUARIO
+:: CONFIGURACAO
 SET USER=Zocarat
 SET COMENTAR=1
 
@@ -35,7 +35,7 @@ IF "%COMENTAR%"=="1" (
 git commit -m "%MSG%"
 
 :: ================================================
-:: CONECTAR AO GITHUB E FAZER PUSH
+:: CONECTAR E ENVIAR PRO GITHUB
 echo === Enviando para o GitHub ===
 
 git remote add origin https://github.com/%USER%/%REPO%.git 2>nul
