@@ -2,7 +2,7 @@
 @echo off
 
 :: =========================================================================================
-:: Verificação do repositório GIT
+:: Verificacao do repositório GIT
 
 echo === Verificando se o repositório do GIT já foi iniciado ===
 
@@ -19,7 +19,7 @@ IF EXIST ".git" (
 
 echo === Adicionando arquivos no GIT .... ===
 git add .
-git commit -m "Atualização automática"
+git commit -m "Atualizacao"
 
 :: =========================================================================================
 :: Conectar ao repositório remoto e enviar
