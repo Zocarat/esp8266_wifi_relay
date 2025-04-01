@@ -1,40 +1,46 @@
-:: Oculta os comandos na tela
 @echo off
 
-:: =========================================================================================
-:: Verificacao do repositório GIT
+:: ================================================
+:: CONFIGURACAO DO USUARIO
+SET USER=Zocarat
+SET COMENTAR=1
 
-echo === Verificando se o repositório do GIT já foi iniciado ===
+:: ================================================
+:: PEGAR O NOME DA PASTA
+FOR %%I IN ("%CD%") DO SET "REPO=%%~nxI"
+
+:: ================================================
+:: INICIALIZAR GIT SE NECESSARIO
+echo === Verificando se o repositorio do GIT ja foi iniciado ===
 
 IF EXIST ".git" (
-    echo GIT JA FOI INICIADO NESTA PASTA.
+    echo GIT ja foi iniciado nesta pasta.
 ) ELSE (
-    echo INICIALIZANDO REPOSITÓRIO GIT...
+    echo Inicializando repositorio GIT...
     git init
     git branch -M main
 )
 
-:: =========================================================================================
-:: Adicionando arquivos e commit
-
-echo === Adicionando arquivos no GIT .... ===
+:: ================================================
+:: ADICIONAR E COMMITAR
+echo === Adicionando arquivos no GIT ===
 git add .
-git commit -m "Atualizacao"
 
-:: =========================================================================================
-:: Conectar ao repositório remoto e enviar
+IF "%COMENTAR%"=="1" (
+    set /p MSG=Digite uma mensagem de commit: 
+) ELSE (
+    set MSG=Atualizacao automatica
+)
 
-echo === Enviando para o repositório remoto no GitHub... ===
+git commit -m "%MSG%"
 
-REM Adiciona origin (ignora erro se já existir)
-git remote add origin https://github.com/Zocarat/esp8266_wifi_relay.git 2>nul
+:: ================================================
+:: CONECTAR AO GITHUB E FAZER PUSH
+echo === Enviando para o GitHub ===
 
-REM Faz pull antes do push, caso o repositório remoto tenha conteúdo
+git remote add origin https://github.com/%USER%/%REPO%.git 2>nul
 git pull origin main --allow-unrelated-histories --no-edit
-
-
-REM Envia os arquivos
 git push -u origin main
 
-echo === Processo concluído. Pressione qualquer tecla para sair... ===
+echo === Processo concluido. Pressione qualquer tecla para sair ===
 pause >nul
