@@ -1,53 +1,56 @@
 @echo off
 SETLOCAL ENABLEDELAYEDEXPANSION
+cls
 
-:: ===jhj====================================
+:: =======================================
+:: MENU INICIAL
+echo.
+echo === GIT UPLOADER ===
+echo Escolha o modo de commit:
+echo [1] Commit automático (usa o nome da pasta)
+echo [2] Commit com mensagem personalizada
+echo [3] Cancelar
+echo.
+set /p OPCAO=Digite a opcao desejada [1-3]: 
+
+IF "%OPCAO%"=="1" (
+    SET COMENTAR=0
+) ELSE IF "%OPCAO%"=="2" (
+    SET COMENTAR=1
+) ELSE (
+    echo Operacao cancelada pelo usuario.
+    pause
+    exit /b
+)
+
+:: =======================================
 :: CONFIGURAÇÕES
 SET USER=Zocarat
-SET COMENTAR=1
-SET DESTINO_DIR=%CD%\updater_git
-
-echo === Iniciando processo de upload Git ===
-echo Diretório atual: %CD%
-echo Subpasta alvo: %DESTINO_DIR%
-echo.
 
 :: =======================================
-:: VERIFICAR SE A SUBPASTA updater_git EXISTE
-IF NOT EXIST "%DESTINO_DIR%\" (
-    echo [ERRO_01] A pasta "updater_git" nao foi encontrada dentro de %CD%
-    pause
-    exit /b
-)
-
-:: =======================================
-:: ENTRAR NA PASTA updater_git (nível 2)
-cd "%DESTINO_DIR%" || (
-    echo [ERRO_02] Falha ao entrar na subpasta updater_git
-    pause
-    exit /b
-)
-
-:: PEGAR O NOME DA PASTA COMO NOME DO REPO
+:: PEGAR O NOME DA PASTA COMO NOME DO REPOSITÓRIO
 FOR %%I IN ("%CD%") DO SET "REPO=%%~nxI"
 echo === Nome do repositório definido: %REPO%
 
 :: =======================================
-:: VERIFICAR SE TEM ARQUIVOS VÁLIDOS DE PROJETO
-SET "CHAVEENCONTRADA=0"
-SET "TIPOS=.ino .c .cpp .py .java .txt README.md"
-
-FOR %%E IN (%TIPOS%) DO (
-    IF EXIST "*%%E" (
-        SET CHAVEENCONTRADA=1
+:: PROTEGER git_upload.bat via .gitignore
+IF NOT EXIST ".gitignore" (
+    echo Criando .gitignore...
+    echo git_upload.bat> .gitignore
+) ELSE (
+    FINDSTR /I /C:"git_upload.bat" .gitignore >nul || (
+        ======================================= echo Adicionando protecao ao .gitignore...
+        echo git_upload.bat>> .gitignore
     )
 )
 
-IF "!CHAVEENCONTRADA!"=="0" (
-    echo [ERRO_03] A pasta "%CD%" nao contem arquivos de projeto reconhecidos (*.py, *.cpp, etc).
-    pause
-    exit /b
-)
+:: =======================================
+:: MOSTRAR STATUS DO GIT
+echo.
+echo ========================================== Verificando arquivos a serem comitados... ===
+git status
+echo.
+pause
 
 :: =======================================
 :: INICIALIZAR GIT
@@ -56,7 +59,7 @@ IF EXIST ".git" (
 ) ELSE (
     echo === Inicializando repositório Git...
     git init || (
-        echo [ERRO_04] Falha ao iniciar o Git.
+        echo [ERRO_01] Falha ao iniciar o Git.
         pause
         exit /b
     )
@@ -67,7 +70,7 @@ IF EXIST ".git" (
 :: ADICIONAR ARQUIVOS
 echo === Adicionando arquivos ao Git...
 git add . || (
-    echo [ERRO_05] Falha ao adicionar arquivos.
+    echo [ERRO_02] Falha ao adicionar arquivos.
     pause
     exit /b
 )
@@ -84,18 +87,20 @@ echo Mensagem de commit: "%MSG%"
 :: =======================================
 :: COMMIT
 git commit -m "%MSG%" || (
-    echo [ERRO_06] Falha ao realizar commit. Verifique se ha modificacoes.
+    echo [ERRO_03] Falha ao realizar commit. Verifique se ha modificacoes.
     pause
     exit /b
 )
 
 :: =======================================
-:: REMOTE ADD E PULL
+:: REMOTE ADD E PUSH INICIAL
 echo === Conectando ao repositório remoto...
+
 git remote add origin https://github.com/%USER%/%REPO%.git 2>nul
 
-git pull origin main --allow-unrelated-histories --no-edit || (
-    echo [ERRO_07] Falha ao sincronizar com o repositório remoto.
+echo === Enviando arquivos para o GitHub...
+git push -u origin main || (
+    echo [ERRO_04] Falha ao enviar para o GitHub.
     pause
     exit /b
 )
@@ -104,7 +109,7 @@ git pull origin main --allow-unrelated-histories --no-edit || (
 :: PUSH
 echo === Enviando arquivos para o GitHub...
 git push -u origin main || (
-    echo [ERRO_08] Falha ao enviar para o GitHub.
+    echo [ERRO_05] Falha ao enviar para o GitHub.
     pause
     exit /b
 )
