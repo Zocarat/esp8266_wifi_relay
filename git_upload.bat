@@ -30,7 +30,8 @@ REM Adiciona origin (ignora erro se já existir)
 git remote add origin https://github.com/Zocarat/esp8266_wifi_relay.git 2>nul
 
 REM Faz pull antes do push, caso o repositório remoto tenha conteúdo
-git pull origin main --allow-unrelated-histories
+git pull origin main --allow-unrelated-histories --no-edit
+
 
 REM Envia os arquivos
 git push -u origin main
